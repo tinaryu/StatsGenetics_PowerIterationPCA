@@ -1,7 +1,7 @@
 #this file contains the functions used in the Power Iteration PCA analysis
 
 import numpy as np
-
+from scipy.spatial.distance import cdist
 
 def calc_af(geno): 
     '''Calculate the allele frequencies for each row in the geno'''
@@ -59,3 +59,47 @@ def RunPowerIteration10PCs(geno):
     psi = GetCovarianceMatrixPsi(geno)
     return GetTop10PCs(psi)
 
+
+def IntraClusterDistance(centroid, pc1,pc2): #returns the average distance between centroid its cluster points
+    total_distance = 0
+    count = len(pc1)
+    for i in range(len(pc1)):
+        distance = cdist([centroid], [[pc1[i],pc2[i]]])[0][0] #Euclidan distance
+        total_distance += distance
+    return total_distance/count
+
+def GetInterclusterDistance(centroids):
+    interclusterdistances = []
+    for i in range(len(centroids)):
+        distance = 0
+        for j in range(len(centroids)):
+            if i != j:
+                distance += cdist([centroids[i]], [centroids[j]])[0][0]
+        interclusterdistances.append(distance/(len(centroids)-1)) #average distance between centroids
+    return interclusterdistances
+
+def GetCentroids(top10PCs, k, num_samples):
+    centroids = []
+    for i in range(k):
+        avgpc1 = top10PCs[0][i*num_samples:(i+1)*num_samples].mean()
+        avgpc2 = top10PCs[1][i*num_samples:(i+1)*num_samples].mean()
+        centroids.append([avgpc1, avgpc2])
+    return centroids
+
+
+def GetIntraClusterDistance(centroids, top10PCs, k, num_samples):
+
+    intraclusterdistances = []
+
+    for i in range(k):
+        pc1 = top10PCs[0][i*num_samples:(i+1)*num_samples]
+        pc2 = top10PCs[1][i*num_samples:(i+1)*num_samples]
+        intraclusterdistances.append(IntraClusterDistance(centroids[i], pc1, pc2))
+
+    return intraclusterdistances
+
+def GetDistanceRatio(top10PCs, k, num_samples):
+    centroids = GetCentroids(top10PCs, k, num_samples)
+    intraclusterdistances = GetIntraClusterDistance(centroids,top10PCs, k, num_samples)
+    interclusterdistances = GetInterclusterDistance(centroids)
+    return np.array(interclusterdistances)/np.array(intraclusterdistances)
