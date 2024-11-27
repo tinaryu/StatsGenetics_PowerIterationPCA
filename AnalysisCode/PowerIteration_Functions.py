@@ -18,7 +18,7 @@ def GetCovarianceMatrixPsi(geno):
     # remove monomorphic rows
     X = X[SD != 0,]
     # calculate the covariance matrix
-    psi = X.transpose().dot(X) / float(X.shape[0])
+    psi = X.transpose().dot(X) / float(X.shape[1])
     return psi
 
 def normalize_vec(v): # *
@@ -46,14 +46,15 @@ def RunUntilConverge(b,psi):
 
 def GetTop10PCs(psi):
     '''Get the top 10 principal components'''
-    b = normalize_vec(np.random.rand(len(psi)))
+    b = normalize_vec(np.random.rand(psi.shape[0]))
     pcs = []
     for i in range(10):
         b = RunUntilConverge(b, psi)
         pcs.append(b)
         d = b.T @ psi @ b
         psi = psi - d * np.outer(b, b)
-    return pcs
+    return pcs  # Each PC is now of shape (n_samples,)
+
 
 def RunPowerIteration10PCs(geno):
     psi = GetCovarianceMatrixPsi(geno)
