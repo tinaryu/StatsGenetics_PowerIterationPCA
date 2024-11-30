@@ -2,6 +2,7 @@
 
 import numpy as np
 from scipy.spatial.distance import cdist
+np.random.seed(42)
 
 def calc_af(geno): 
     '''Calculate the allele frequencies for each row in the geno'''
