@@ -98,6 +98,7 @@ def GetIntraClusterDistance(centroids, top10PCs, k, num_samples):
 
     return intraclusterdistances
 
+#Get the ratio of intercluster distance to intracluster distance. K is the number of clusters
 def GetDistanceRatio(top10PCs, k, num_samples):
     centroids = GetCentroids(top10PCs, k, num_samples)
     intraclusterdistances = GetIntraClusterDistance(centroids,top10PCs, k, num_samples)
