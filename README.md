@@ -2,7 +2,7 @@
 
 This repository contains the code for the Power Iteration project for 02-704 Introduction to Statistical Genetics by Tina Ryu and Manjot Nagyal.
 
-We aim to understand how the  
+We aim to understand how    
 1) sample size
 2) population inclusion
 3) SNP inclusion
